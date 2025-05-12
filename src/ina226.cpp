@@ -1,4 +1,4 @@
-#include "config/config_macro.hpp"
+#include "config/ina226-config_macro.hpp"
 #include "ina226.hpp"
 #include "sdkconfig.h"
 

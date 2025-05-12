@@ -1,5 +1,5 @@
-#include "ctrl/ctrl.hpp"
-#include "common_types.hpp"
+#include "ctrl/ina226-ctrl.hpp"
+#include "ina226-common_types.hpp"
 
 #include "esp_log.h"
 

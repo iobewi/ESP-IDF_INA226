@@ -1,5 +1,5 @@
 #pragma once
-#include "config/config_types.hpp"
+#include "config/ina226-config_types.hpp"
 
 namespace ina226
 

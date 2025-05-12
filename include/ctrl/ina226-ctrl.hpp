@@ -4,18 +4,18 @@
 #include <cstdint>
 #include <string>
 
-#include "interface.hpp"
+#include "ina226-interface.hpp"
 
 
 
 
 namespace ina226
 {
-    static_assert(std::is_class<ina226::INTERFACE>::value, "ina226::INTERFACE is not a class");
-    class CTRL : public ina226::INTERFACE
+    static_assert(std::is_class<INTERFACE>::value, "INTERFACE is not a class");
+    class CTRL : public INTERFACE
     {
     public:
-        explicit CTRL(I2CDevices &dev) : ina226::INTERFACE(dev) {}
+        explicit CTRL(I2CDevices &dev) : INTERFACE(dev) {}
 
         int32_t shunt_voltage_uv;
         uint32_t bus_voltage_mv;

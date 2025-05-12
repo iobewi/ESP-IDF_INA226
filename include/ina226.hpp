@@ -9,9 +9,9 @@
 #include "esp_log.h"
 #include "esp_intr_alloc.h"
 
-#include "ctrl/ctrl.hpp"
-#include "config/config.hpp"
-#include "status/status.hpp"
+#include "ctrl/ina226-ctrl.hpp"
+#include "config/ina226-config.hpp"
+#include "status/ina226-status.hpp"
 
 namespace ina226
 {

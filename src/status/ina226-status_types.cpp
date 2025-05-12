@@ -1,4 +1,4 @@
-#include "status/status_types.hpp"
+#include "status/ina226-status_types.hpp"
 #include <sstream>
 
 namespace ina226

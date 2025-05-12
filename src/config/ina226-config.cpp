@@ -1,5 +1,5 @@
-#include "config/config.hpp"
-#include "common_types.hpp"
+#include "config/ina226-config.hpp"
+#include "ina226-common_types.hpp"
 #include <cmath>
 #include <string>
 
@@ -24,7 +24,7 @@ namespace ina226
     }
 
     Config::Config(I2CDevices &dev, const ConfigParams &params)
-        : ina226::INTERFACE(dev),
+        : INTERFACE(dev),
           params_(params)
     {
         params_.calibration.value = compute_calibration_mohm(params_.shunt_res_milliohm);

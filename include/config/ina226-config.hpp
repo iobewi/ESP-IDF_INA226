@@ -5,12 +5,12 @@
 
 #include "esp_err.h"
 
-#include "interface.hpp"
-#include "config/config_types.hpp"
+#include "ina226-interface.hpp"
+#include "config/ina226-config_types.hpp"
 
 namespace ina226
 {
-    class Config : public ina226::INTERFACE
+    class Config : public INTERFACE
     {
     public:
         Config(I2CDevices &dev, 

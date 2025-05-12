@@ -1,5 +1,5 @@
-#include "config/config_types.hpp"
-#include "common_types.hpp"
+#include "config/ina226-config_types.hpp"
+#include "ina226-common_types.hpp"
 
 #include "esp_log.h"
 

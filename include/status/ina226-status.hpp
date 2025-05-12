@@ -2,15 +2,15 @@
 
 #include "esp_err.h"
 #include <cstdint>
-#include "interface.hpp"
-#include "status/status_types.hpp"  // Contient struct StatusRegister avec decode/log/to_json
+#include "ina226-interface.hpp"
+#include "status/ina226-status_types.hpp"  // Contient struct StatusRegister avec decode/log/to_json
 
 namespace ina226
 {
-    class STATUS : public ina226::INTERFACE
+    class STATUS : public INTERFACE
     {
     public:
-        explicit STATUS(I2CDevices &dev) : ina226::INTERFACE(dev) {}
+        explicit STATUS(I2CDevices &dev) : INTERFACE(dev) {}
 
         StatusRegister status; // Représente les flags du registre 0x06 (Mask/Enable)
 

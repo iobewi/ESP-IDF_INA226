@@ -1,6 +1,6 @@
-#include "config/config_macro.hpp"
+#include "config/ina226-config_macro.hpp"
 #include "sdkconfig.h"
-#include "config/config.hpp"
+#include "config/ina226-config.hpp"
 
 namespace ina226
 {
