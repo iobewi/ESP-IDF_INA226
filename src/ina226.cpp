@@ -2,13 +2,18 @@
 #include "ina226.hpp"
 #include "sdkconfig.h"
 
-#define RETURN_IF_ERROR(x)         \
-    do {                           \
-        esp_err_t __err_rc = (x);  \
-        if (__err_rc != ESP_OK) {  \
-            return __err_rc;       \
-        }                          \
+#define RETURN_IF_ERROR(x)                          \
+    do {                                             \
+        esp_err_t __err_rc = (x);                   \
+        if (__err_rc != ESP_OK) {                   \
+            ESP_LOGE("RETURN_IF_ERROR",             \
+                     "%s failed at %s:%d → %s",     \
+                     #x, __FILE__, __LINE__,        \
+                     esp_err_to_name(__err_rc));    \
+            return __err_rc;                        \
+        }                                            \
     } while (0)
+
 
 #define HANDLE_OUTPUT(format, obj)                            \
     do {                                                      \
@@ -33,46 +38,53 @@ namespace ina226
 
     INA226Manager::INA226Manager(I2CDevices &i2c)
         : i2c_(i2c),
-          cfg_(i2c, load_config_from_kconfig()),
+          cfg_(i2c_),
           alert_gpio_(gpio_num_t(CONFIG_INA226_INT_ALERT)),
-          status_(i2c_)
+          status_(i2c_),
+          ctrl_(i2c_)
           {}
 
     // === API PUBLIQUE ===
 
     void INA226Manager::init()
     {
-        xTaskCreatePinnedToCore(task_wrapper, "STUSB_Task", 4096, this, 5, &task_handle_, 1);
+        xTaskCreatePinnedToCore(task_wrapper, "STUSB_Task", 4096, this, 5, &task_handle_, 0);
     }
 
     esp_err_t INA226Manager::init_device()
     {
         RETURN_IF_ERROR(reset());
-        // Pause de stabilisation (empirique mais nécessaire)
-        vTaskDelay(pdMS_TO_TICKS(2));
-        RETURN_IF_ERROR(apply_config());
+        vTaskDelay(pdMS_TO_TICKS(100));
         RETURN_IF_ERROR(get_status(OutputFormat::Log));
+        // Pause de stabilisation (empirique mais nécessaire)
+        RETURN_IF_ERROR(apply_config(cfg_));
+        RETURN_IF_ERROR(get_status(OutputFormat::Log));
+        cfg_.datas().log();
         return ESP_OK;
+    }
+
+    esp_err_t INA226Manager::apply_config(Config &cfg)
+    {
+        ConfigParams from_kconfig = load_config_from_kconfig();
+        RETURN_IF_ERROR(cfg.get_config());
+        cfg.datas().configuration.set_values(from_kconfig.configuration.get_values());
+        cfg.datas().calibration.set_raw(from_kconfig.calibration.get_value());
+        cfg.datas().alert_mask.set_values(from_kconfig.alert_mask.get_values());
+        cfg.datas().alert_limit.set_raw(from_kconfig.alert_limit.get_value());
+        return cfg.set();
     }
 
     /// Envoie un soft reset au INA226
     esp_err_t INA226Manager::reset()
     {
-        CTRL ctrl(i2c_);
-        return ctrl.send_reset();
-    }
-
-    esp_err_t INA226Manager::apply_config()
-    {
-        return cfg_.set_registers();
+        return ctrl_.send_reset();
     }
 
     esp_err_t INA226Manager::handle_alert()
     {
         ESP_LOGW(TAG, "ALERT triggered!");
-        CTRL ctrl(i2c_);
-        RETURN_IF_ERROR(ctrl.get());
-        ctrl.log();    
+        RETURN_IF_ERROR(ctrl_.get());
+        ctrl_.log();    
         // Optionnel : tu peux ici faire un traitement plus ciblé si tu sais quelle alerte est active
         // Ex : si MASK_ENABLE (0x06) a le bit "Shunt Over-Voltage", alors tu vérifies ça ici
     

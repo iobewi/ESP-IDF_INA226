@@ -34,9 +34,6 @@ namespace ina226
         std::string to_json() const;
 
     private:
-        esp_err_t read_u16(uint8_t reg, uint16_t &out);
-        esp_err_t read_s16(uint8_t reg, int16_t &out);
-
         static constexpr uint8_t REG_CONFIG = 0X00;
         static constexpr uint8_t REG_SHUNT_VOLTAGE = 0X01;
         static constexpr uint8_t REG_BUS_VOLTAGE = 0X02;

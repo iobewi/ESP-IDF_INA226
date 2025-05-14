@@ -19,15 +19,14 @@ namespace ina226
          */
         esp_err_t get()
         {
-            uint8_t raw[2] = {0};
-            esp_err_t err = read_register(StatusRegister::reg_addr, raw, 2);
+            uint16_t value;
+            esp_err_t err = read_u16(StatusRegister::reg_addr, value);
             if (err != ESP_OK)
             {
                 ESP_LOGE(TAG, "Failed to read INA226 status (err=0x%x)", err);
                 return err;
             }
 
-            uint16_t value = (raw[0] << 8) | raw[1];
             status.decode(value);
             return ESP_OK;
         }

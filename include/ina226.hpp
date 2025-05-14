@@ -39,7 +39,7 @@ namespace ina226
         esp_err_t reset();
 
         /// Écrit la configuration depuis les paramètres (Kconfig ou runtime)
-        esp_err_t apply_config();
+        esp_err_t apply_config(Config &cfg);
 
         /// Gère une alerte si déclenchée par le GPIO
         esp_err_t handle_alert();
@@ -56,6 +56,7 @@ namespace ina226
         Config cfg_;
         gpio_num_t alert_gpio_;
         STATUS status_;
+        CTRL ctrl_;
 
         TaskHandle_t task_handle_ = nullptr;
 

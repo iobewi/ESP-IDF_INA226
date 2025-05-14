@@ -26,4 +26,7 @@ namespace ina226 {
     /// (Current_LSB = 1 mA → Power = current × POWER_FACTOR)
     static constexpr uint16_t POWER_FACTOR = 1000 / CURRENT_LSB_MA * POWER_LSB_MW; // = 40
 
+    static constexpr uint32_t MAX_CAL = 32767;
+    
+    static constexpr uint32_t CAL_CONST = 5120000; // = 0.00512 / (µA * mOhm)
 }

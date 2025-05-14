@@ -105,7 +105,7 @@ menu "INA226 Power Monitor Configuration"
         config INA226_INT_ALERT
             int "INT GPIO Number"
             range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-            default 12
+            default 8
             help
                 GPIO used for INA226 ALERT pin
     
