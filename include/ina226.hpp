@@ -58,6 +58,7 @@ namespace ina226
         STATUS status_;
         CTRL ctrl_;
 
+        inline static const char *TAG = "INA226_MANAGER";
         bool ready_ = false;
         esp_err_t is_ready();
 

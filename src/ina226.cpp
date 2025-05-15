@@ -34,8 +34,6 @@
 namespace ina226
 {
 
-    static const char *TAG = "INA226";
-
     inline esp_err_t return_if_not_ready(bool ready, const char* tag)
     {
         if (!ready)

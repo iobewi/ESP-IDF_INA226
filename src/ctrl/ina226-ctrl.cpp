@@ -18,8 +18,6 @@
 
 namespace ina226
 {
-    static const char *TAG = "INA226-CTRL";
-
     esp_err_t CTRL::ready()
     {
         uint16_t value;
