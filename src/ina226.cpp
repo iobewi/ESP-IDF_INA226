@@ -36,6 +36,16 @@ namespace ina226
 
     static const char *TAG = "INA226";
 
+    inline esp_err_t return_if_not_ready(bool ready, const char* tag)
+    {
+        if (!ready)
+        {
+            ESP_LOGE(tag, "Tentative d’utilisation sans initialisation préalable");
+            return ESP_ERR_INVALID_STATE;
+        }
+        return ESP_OK;
+    }
+
     INA226Manager::INA226Manager(I2CDevices &i2c)
         : i2c_(i2c),
           cfg_(i2c_),
@@ -52,6 +62,17 @@ namespace ina226
     }
 
     esp_err_t INA226Manager::init_device()
+    {
+        RETURN_IF_ERROR(is_ready());
+        RETURN_IF_ERROR(reset());
+        vTaskDelay(pdMS_TO_TICKS(100));
+        RETURN_IF_ERROR(apply_config(cfg_));
+        RETURN_IF_ERROR(get_status(OutputFormat::Log));
+        cfg_.datas().log();
+        return ESP_OK;
+    }
+
+    esp_err_t INA226Manager::is_ready()
     {
         const int max_attempts = 10;
         const int delay_ms = 50;
@@ -71,20 +92,16 @@ namespace ina226
         if (err != ESP_OK)
         {
             ESP_LOGE(TAG, "INA226 non détecté après %d tentatives", max_attempts);
+            ready_ = false;
             return ESP_ERR_TIMEOUT; // ou err si tu veux refléter la dernière erreur de ready()
         }
-
-        RETURN_IF_ERROR(reset());
-        vTaskDelay(pdMS_TO_TICKS(100));
-        
-        RETURN_IF_ERROR(apply_config(cfg_));
-        RETURN_IF_ERROR(get_status(OutputFormat::Log));
-        cfg_.datas().log();
+         ready_ = true;
         return ESP_OK;
     }
 
     esp_err_t INA226Manager::apply_config(Config &cfg)
     {
+        RETURN_IF_ERROR(return_if_not_ready(ready_, TAG));
         ConfigParams from_kconfig = load_config_from_kconfig();
         RETURN_IF_ERROR(cfg.get_config());
         cfg.datas().configuration.set_values(from_kconfig.configuration.get_values());
@@ -97,11 +114,13 @@ namespace ina226
     /// Envoie un soft reset au INA226
     esp_err_t INA226Manager::reset()
     {
+        RETURN_IF_ERROR(return_if_not_ready(ready_, TAG));
         return ctrl_.send_reset();
     }
 
     esp_err_t INA226Manager::handle_alert()
     {
+        RETURN_IF_ERROR(return_if_not_ready(ready_, TAG));
         ESP_LOGW(TAG, "ALERT triggered!");
         RETURN_IF_ERROR(ctrl_.get());
         ctrl_.log();    
@@ -113,6 +132,7 @@ namespace ina226
 
     esp_err_t INA226Manager::get_status(OutputFormat format)
     {
+        RETURN_IF_ERROR(return_if_not_ready(ready_, TAG));
         RETURN_IF_ERROR(status_.get());
         HANDLE_OUTPUT(format, status_);
         return ESP_OK;
@@ -120,9 +140,9 @@ namespace ina226
 
     esp_err_t INA226Manager::get_measurements(OutputFormat format)
     {
-        CTRL ctrl(i2c_);
-        RETURN_IF_ERROR(ctrl.get());
-        HANDLE_OUTPUT(format, ctrl);
+        RETURN_IF_ERROR(return_if_not_ready(ready_, TAG));
+        RETURN_IF_ERROR(ctrl_.get());
+        HANDLE_OUTPUT(format, ctrl_);
         return ESP_OK;
     }
 
@@ -168,12 +188,13 @@ namespace ina226
     void INA226Manager::task_main()
     {
         setup_interrupt(alert_gpio_);
-
         init_device();
+
         while (true)
         {
             if (gpio_get_level(alert_gpio_) == 0 || ulTaskNotifyTake(pdTRUE, portMAX_DELAY))
             {
+                ESP_LOGE(TAG, "Alert");
                 handle_alert();
             }
         }

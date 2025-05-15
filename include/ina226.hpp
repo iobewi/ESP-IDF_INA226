@@ -58,6 +58,9 @@ namespace ina226
         STATUS status_;
         CTRL ctrl_;
 
+        bool ready_ = false;
+        esp_err_t is_ready();
+
         TaskHandle_t task_handle_ = nullptr;
 
         static void task_wrapper(void *arg);
