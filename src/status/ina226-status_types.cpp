@@ -3,6 +3,8 @@
 
 namespace ina226
 {
+    static const char *TAG = "INA226-STATUS";
+
     void StatusRegister::decode(uint16_t reg)
     {
         raw_value = reg;
@@ -17,8 +19,8 @@ namespace ina226
 
     void StatusRegister::log() const
     {
-        ESP_LOGI("INA226-STATUS", "Reg[0x06]=0x%04X CNVR=%d AFF=%d POL=%d", raw_value, conversion_ready, alert_flag, power_over_limit);
-        ESP_LOGI("INA226-STATUS", "BOL=%d BUL=%d SOL=%d SUL=%d",
+        ESP_LOGI(TAG, "Reg[0x06]=0x%04X CNVR=%d AFF=%d POL=%d", raw_value, conversion_ready, alert_flag, power_over_limit);
+        ESP_LOGI(TAG, "BOL=%d BUL=%d SOL=%d SUL=%d",
                  bus_over_limit, bus_under_limit, shunt_over_limit, shunt_under_limit);
     }
 

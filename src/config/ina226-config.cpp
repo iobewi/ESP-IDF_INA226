@@ -28,7 +28,7 @@ namespace ina226
     }
 
     esp_err_t Config::get_config(){
-        uint16_t config;
+        uint16_t config = 0;
         RETURN_IF_ERROR(read_u16(params_.configuration.reg_addr,config));
         params_.configuration.set_raw(config);
         return ESP_OK;
@@ -42,21 +42,21 @@ namespace ina226
     }
 
     esp_err_t Config::get_calibration(){
-        uint16_t config;
+        uint16_t config = 0;
         RETURN_IF_ERROR(read_u16(params_.calibration.reg_addr,config));
         params_.calibration.set_raw(config);
         return ESP_OK;
     }
 
     esp_err_t Config::get_alert_mask(){
-        uint16_t config;
+        uint16_t config = 0;
         RETURN_IF_ERROR(read_u16(params_.alert_mask.reg_addr,config));
         params_.alert_mask.set_raw(config);
         return ESP_OK;
     }
 
     esp_err_t Config::get_alert_limit() {
-        uint16_t config;
+        uint16_t config = 0;
         RETURN_IF_ERROR(read_u16(params_.alert_limit.reg_addr,config));
         params_.alert_limit.set_raw(config);
         return ESP_OK;

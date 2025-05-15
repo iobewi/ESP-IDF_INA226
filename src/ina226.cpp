@@ -53,10 +53,30 @@ namespace ina226
 
     esp_err_t INA226Manager::init_device()
     {
+        const int max_attempts = 10;
+        const int delay_ms = 50;
+        esp_err_t err = ESP_OK;
+        for (int attempt = 0; attempt < max_attempts; ++attempt)
+        {
+            err = ctrl_.ready();
+                if (err == ESP_OK)
+                {
+                    ESP_LOGI(TAG, "INA226 détecté sur le bus (tentative %d)", attempt + 1);
+                    break;
+                }
+            ESP_LOGW(TAG, "Tentative %d/%d : INA226 non prêt (err=0x%x)", attempt + 1, max_attempts, err);
+            vTaskDelay(pdMS_TO_TICKS(delay_ms));
+        }
+        
+        if (err != ESP_OK)
+        {
+            ESP_LOGE(TAG, "INA226 non détecté après %d tentatives", max_attempts);
+            return ESP_ERR_TIMEOUT; // ou err si tu veux refléter la dernière erreur de ready()
+        }
+
         RETURN_IF_ERROR(reset());
         vTaskDelay(pdMS_TO_TICKS(100));
-        RETURN_IF_ERROR(get_status(OutputFormat::Log));
-        // Pause de stabilisation (empirique mais nécessaire)
+        
         RETURN_IF_ERROR(apply_config(cfg_));
         RETURN_IF_ERROR(get_status(OutputFormat::Log));
         cfg_.datas().log();
@@ -148,6 +168,7 @@ namespace ina226
     void INA226Manager::task_main()
     {
         setup_interrupt(alert_gpio_);
+
         init_device();
         while (true)
         {

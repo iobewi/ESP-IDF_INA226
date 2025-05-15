@@ -20,6 +20,14 @@ namespace ina226
 {
     static const char *TAG = "INA226-CTRL";
 
+    esp_err_t CTRL::ready()
+    {
+        uint16_t value;
+        RETURN_IF_ERROR(read_u16(REG_DEVICE_ID, value));
+        if (value != VALUE_DEVICE_ID) return ESP_ERR_INVALID_RESPONSE;
+        return ESP_OK;
+    }
+    
     esp_err_t CTRL::send_reset()
     {
         uint16_t config;
