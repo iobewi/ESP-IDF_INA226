@@ -47,7 +47,7 @@ namespace ina226
     INA226Manager::INA226Manager(I2CDevices &i2c)
         : i2c_(i2c),
           cfg_(i2c_),
-          alert_gpio_(gpio_num_t(CONFIG_INA226_INT_ALERT)),
+          alert_gpio_(gpio_num_t(CONFIG_INA226_INT_ALERT_GPIO)),
           status_(i2c_),
           ctrl_(i2c_)
           {}

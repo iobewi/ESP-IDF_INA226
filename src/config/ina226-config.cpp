@@ -23,9 +23,7 @@ namespace ina226
     Config::Config(I2CDevices &dev, const ConfigParams &params)
         : INTERFACE(dev),
           params_(params)
-    {
-        params_.log();
-    }
+    {}
 
     esp_err_t Config::get_config(){
         uint16_t config = 0;

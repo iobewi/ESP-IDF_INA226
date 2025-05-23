@@ -102,7 +102,7 @@ menu "INA226 Power Monitor Configuration"
             help
                 Frequency for I2C Master operations
         
-        config INA226_INT_ALERT
+        config INA226_INT_ALERT_GPIO
             int "INT GPIO Number"
             range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
             default 8

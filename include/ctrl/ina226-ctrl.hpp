@@ -23,13 +23,13 @@ namespace ina226
         int32_t current_ma;
 
         esp_err_t ready();
+        esp_err_t send_reset();
+
         esp_err_t get_shunt_voltage();
         esp_err_t get_bus_voltage();
         esp_err_t get_power();
         esp_err_t get_current();
         esp_err_t get();
-
-        esp_err_t send_reset();
 
         void log() const;
         std::string to_json() const;
@@ -42,8 +42,8 @@ namespace ina226
         static constexpr uint8_t REG_POWER = 0X03;
         static constexpr uint8_t REG_CURRENT = 0X04;
         static constexpr uint8_t REG_DEVICE_ID = 0xFE;
+        
         static constexpr uint16_t VALUE_DEVICE_ID  = 0x5449;
-
         static constexpr uint16_t RESET_COMMAND = 1 << 15; // [15] Reset (0 = pas de reset, 1 = reset)
     };
 
